@@ -1,0 +1,52 @@
+
+<form action="javascript:void(0);" > 
+<h1>Networking</h1>
+Wifi Network: <span id="wifiNetwork"><script>se</script></span><br>
+
+<input type="radio" id="DHCP" name="IPSetting" checked  onclick="document.getElementById('StaticIP').hidden=true;document.getElementById('DHCPIP').hidden=false;">
+<label for="DHCP">DHCP</label>
+<input type="radio" id="Static" name="IPSetting" onclick="document.getElementById('StaticIP').hidden=false;document.getElementById('DHCPIP').hidden=true;">
+<label for="Static">StaticIP</label>
+</form>
+<div id="DHCPIP" name="DHCPIP">
+    <h2>DHCP Settings</h2>
+    <button >Save</button>
+    <div>IP Address: </div>
+    <div>Subnet:</div>
+    <div>Default Gateway:</div>
+    <div>DNS Server 1:</div>
+    <div>DNS Server 2:</div>
+</div>
+
+<div id="StaticIP" name="StaticIp" hidden="true">
+    <form action="javascript:void(0);" > 
+    <h2>Static IP Settings</h2>
+    <div>
+        <label >IP Address:</label><br>
+        <input type="text" id="IP_addr"> 
+    </div>
+    <div>
+        <label>Subnet:</label><br>
+        <input type="text" id="Subnet"> 
+    </div>
+    <div>
+        <label>Default Gateway:</label><br>
+        <input type="text" id="Subnet"> 
+        
+    </div>
+    <div>
+        <label>DNS Server 1:</label><br>
+        <input type="text" id="Subnet"> 
+    </div>
+    <div>        
+        <label>DNS Server 1:</label><br>
+        <input type="text" id="Subnet"> 
+    </div>
+    <div >
+        <button >Save</button>
+    </div>
+</div>
+
+<div name="CurrentConfig"></div>
+
+<h1>Sensor Calibration</h1>
