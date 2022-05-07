@@ -7,6 +7,7 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 #include <SPIFFS.h>
+
 AsyncWebServer Server(80); 
 AsyncWebSocket webSocket("/ws");
 AsyncEventSource events("/events");
@@ -14,14 +15,14 @@ AsyncEventSource events("/events");
 String processor(const String &var){
     return "";
 }
+
 void onRequest(void *arg){
    
 }
 
 void setupHttpServer(){
-
-    Server.serveStatic("/", SPIFFS, "/www/").setDefaultFile("index.html").setCacheControl("max-age=60");
-        Server.serveStatic("/", SPIFFS, "/www/").setCacheControl("max-age=60");
+    Server.serveStatic("/", SPIFFS, "/www/").setDefaultFile("index.html");
+    Server.serveStatic("/", SPIFFS, "/www/").setCacheControl("max-age=60");
     Server.on("/config.html", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, "/config.html", String(), false, processor);
     });
@@ -96,29 +97,34 @@ String getStatusJSON(){
    return temp;
 }
 
-void (*onCmd)(AsyncWebSocketClient *client, char* cmd, char* txt) = [] (AsyncWebSocketClient *client, char* cmd,  char* txt){};
+void (*onCmd)(AsyncWebSocketClient *client, char* cmd, char* type, char* txt) = [] (AsyncWebSocketClient *client, char* cmd, char* type,  char* txt){};
 
+// command format "CMD|TYPE|TEXT"
+//TYPE = JSON or Text
 void webSocketTextParser(char *data, AsyncWebSocketClient *client){
-    char * tmp;
+    char *tmp, *cmd, *type, *txt;
     if(data != NULL && strcmp(data,"")){
-        tmp = strtok(data,"|");
+        tmp = strtok(data,"|"); //parse command 
         if(tmp != NULL){
-            char * cmd = tmp;
-             tmp = strtok (NULL, "|");
+            cmd = tmp;
+            tmp = strtok (NULL, "|"); //parse data type(json or text)
+            if(tmp !=NULL)
+                type = tmp;
+            else
+                type=NULL;
+            tmp = strtok (NULL, "|"); // parse text 
             if (tmp != NULL){
-               onCmd(client, cmd, tmp);
+               txt = tmp;
             }
             else{
-                onCmd(client, cmd, NULL);
+                txt = NULL;
             }
         }
-        else{
-            client->text(data);
-        }
+        onCmd(client, cmd, type, txt);
+        return;
     }
-    else{
-        client->text("No command recieved");
-    }
+    client->text("Invailid Commmand Structure Recieved!");
+    
 }
 
 void webSocketMessageHandler(AsyncWebSocket *server, AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len){
@@ -158,6 +164,8 @@ void setupWebSocket(){
     webSocket.onEvent(onWSEvent);
     Server.addHandler(&webSocket);
 }
+
+
 
 void startHttpServer(){
     tcpip_adapter_init();
