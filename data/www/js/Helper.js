@@ -76,7 +76,8 @@ function onMessage(event) {
 function onLoad(event) {
  
 }
-function sendcmd(cmd){
+
+function sendcmd(cmd){ 
     websocket.send(cmd);
 }
 

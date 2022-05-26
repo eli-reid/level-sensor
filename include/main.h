@@ -11,6 +11,6 @@
     Serial.begin(115200); 
 }
 
-void CommandHandler(AsyncWebSocketClient *client, char* cmd,  char* txt){
+void CommandHandler(AsyncWebSocketClient *client, char* cmd, char* type, char* txt){
    client->text("I'm handling your commands!");
 }

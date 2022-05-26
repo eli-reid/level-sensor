@@ -7,7 +7,7 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 #include <SPIFFS.h>
-
+#include <stdio.h>
 AsyncWebServer Server(80); 
 AsyncWebSocket webSocket("/ws");
 AsyncEventSource events("/events");
@@ -101,40 +101,29 @@ void (*onCmd)(AsyncWebSocketClient *client, char* cmd, char* type, char* txt) = 
 
 // command format "CMD|TYPE|TEXT"
 //TYPE = JSON or Text
-void webSocketTextParser(char *data, AsyncWebSocketClient *client){
-    char *tmp, *cmd, *type, *txt;
-    if(data != NULL && strcmp(data,"")){
-        tmp = strtok(data,"|"); //parse command 
-        if(tmp != NULL){
-            cmd = tmp;
-            tmp = strtok (NULL, "|"); //parse data type(json or text)
-            if(tmp !=NULL)
-                type = tmp;
-            else
-                type=NULL;
-            tmp = strtok (NULL, "|"); // parse text 
-            if (tmp != NULL){
-               txt = tmp;
-            }
-            else{
-                txt = NULL;
-            }
+void wsMessageParse(char *data, AsyncWebSocketClient *client){
+        std::vector <char *> result;
+        char *tmp ="";
+        while (tmp != NULL)
+        {
+           tmp = strtok(data,"|");
+           result.push_back(tmp);
         }
-        onCmd(client, cmd, type, txt);
+        if(result.size() < 3)
+            client->text("Invailid Commmand Structure Recieved!");
+        else
+            onCmd(client, result.at(0), result.at(1), result.at(2));
         return;
-    }
-    client->text("Invailid Commmand Structure Recieved!");
-    
 }
 
-void webSocketMessageHandler(AsyncWebSocket *server, AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len){
+void wsMessageHandler(AsyncWebSocket *server, AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len){
     AwsFrameInfo * info = (AwsFrameInfo*)arg;
     if(info->final && info->index == 0 && info->len == len){
         Serial.printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
         if(info->opcode == WS_TEXT){
             data[len] = 0;
             Serial.printf("%s\n", (char*)data);
-            webSocketTextParser((char*)data, client);
+            wsMessageParse((char*)data, client);
         }
     } 
 }
@@ -150,8 +139,8 @@ void onWSEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
         Serial.printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
         break;
     case WS_EVT_DATA:
-      webSocketMessageHandler(server, client, arg, data, len);
-      break;
+        wsMessageHandler(server, client, arg, data, len);
+        break;
     case WS_EVT_PONG:
         Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
         break;
