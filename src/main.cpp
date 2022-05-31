@@ -13,6 +13,8 @@ void setup() {
     connectToNetwork();
     Serial.print("Current Boot Count: ");
     Serial.println(getBootCount());
+    Serial.print("Current Sensor cal: ");
+    Serial.println(getSensorCal());
     onCmd = CommandHandler;
   
 }
@@ -27,7 +29,7 @@ void loop() {
     
     if(d != distIn){
         d=distIn;
-        sprintf(dist,"%f",distIn);
+        sprintf(dist,"%f",distIn+getSensorCal());
         events.send(dist,"newdistance",millis());
     }
     delay(100);

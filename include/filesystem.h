@@ -81,5 +81,8 @@ int getBootCount(){
     loadConfig();
     return doc["START_UP"]["BOOT_COUNT"];
 }
-
+float getSensorCal(){
+   loadConfig();
+   return doc["SENSOR"]["CALIBRATION"];
+}
 #endif

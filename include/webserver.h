@@ -85,7 +85,6 @@ void setupEvents(){
 *************************************************************************************************************************************
 |                                                   WebSocket Setup                                                                 |
 *************************************************************************************************************************************
-*   Message Structure:  CMD|DATA
 */
 
 String getStatusJSON(){
@@ -96,18 +95,18 @@ String getStatusJSON(){
    serializeJsonPretty(statusJson, temp);
    return temp;
 }
-
-void (*onCmd)(AsyncWebSocketClient *client, char* cmd, char* type, char* txt) = [] (AsyncWebSocketClient *client, char* cmd, char* type,  char* txt){};
+//place holder function for websocket message event
+void (*onCmd)(AsyncWebSocketClient *client, char* cmd, char* type, char* data) = [] (AsyncWebSocketClient *client, char* cmd, char* type,  char* txt){};
 
 // command format "CMD|TYPE|TEXT"
 //TYPE = JSON or Text
-void wsMessageParse(char *data, AsyncWebSocketClient *client){
+void wsMessageParse(char *msgData, AsyncWebSocketClient *client){
         std::vector <char *> result;
-        char *tmp ="";
+        char *tmp = strtok(msgData,"|");
         while (tmp != NULL)
-        {
-           tmp = strtok(data,"|");
+        {           
            result.push_back(tmp);
+           tmp = strtok (NULL, "|");
         }
         if(result.size() < 3)
             client->text("Invailid Commmand Structure Recieved!");
@@ -115,7 +114,7 @@ void wsMessageParse(char *data, AsyncWebSocketClient *client){
             onCmd(client, result.at(0), result.at(1), result.at(2));
         return;
 }
-
+// only gets first frame of message 
 void wsMessageHandler(AsyncWebSocket *server, AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len){
     AwsFrameInfo * info = (AwsFrameInfo*)arg;
     if(info->final && info->index == 0 && info->len == len){
@@ -153,8 +152,6 @@ void setupWebSocket(){
     webSocket.onEvent(onWSEvent);
     Server.addHandler(&webSocket);
 }
-
-
 
 void startHttpServer(){
     tcpip_adapter_init();
