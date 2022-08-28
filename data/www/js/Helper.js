@@ -2,13 +2,14 @@
 $(document).ready(function(){
         $('#Home').load("/status.html");
         $('#Config').load("/config.html");
+        $('#Wifi').load("/wifi.html");
     });
 
-var config={};
+let config={};
 
 //Tab COntrol
 function openPage(pageName,elmnt,color) {
-    var i, tabcontent, tablinks;
+    let i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
@@ -24,6 +25,21 @@ function openPage(pageName,elmnt,color) {
 function onLoad(event) {
     eventConnect();
     wsConnect();
+}
+
+function saveNetworkConfig(){
+    configJSON.WIFI_STA_CONFIG.DCHP_ENABLED = document.getElementById('DHCP').checked;
+    if(document.getElementById('Static').checked){
+        configJSON.WIFI_STA_CONFIG.IP_ADDR = document.getElementById('IP_addrText').value;
+        configJSON.WIFI_STA_CONFIG.SUBNET = document.getElementById('SubnetText').value;
+        configJSON.WIFI_STA_CONFIG.DEFAULT_GATEWAY = document.getElementById('GatewayText').value;
+        configJSON.WIFI_STA_CONFIG.DNS_SERVER1 = document.getElementById('DNSText1').value;
+        configJSON.WIFI_STA_CONFIG.DNS_SERVER2 = document.getElementById('DNSText2').value;
+    }
+   console.log("saving config")
+   console.log(JSON.stringify(configJSON));
+    saveConfig(JSON.stringify(configJSON));
+    getConfig();
 }
 // Get the element with id="defaultOpen" and click on it
 document.getElementById("defaultOpen").click();
