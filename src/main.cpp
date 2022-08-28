@@ -5,10 +5,11 @@ float d = distIn;
 char dist[10];
 
 void setup() {
+    tcpip_adapter_init();
     startSerial();
+    startDistanceTimer();
     startFileSystem();
     startHttpServer();
-    startDistanceTimer();
     increamentBootCount();
     connectToNetwork();
     Serial.print("Current Boot Count: ");

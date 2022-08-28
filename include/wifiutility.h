@@ -24,7 +24,7 @@ String translateEncryptionType(wifi_auth_mode_t encryptionType) {
   return "FAIL";
 }
 
-const char* ssid = " MyFy";
+const char* ssid = "MyFy";
 const char* password =  "edog0049a";
 
 void setWifiAP(){
@@ -35,16 +35,16 @@ void setWifiSTA(){
     WiFi.mode(WIFI_MODE_STA);
 }
 
-void setwifiAP_STA(){
+void setWifiAP_STA(){
      WiFi.mode(WIFI_MODE_APSTA);
 }
  
 void scanNetworks() {
-  int numberOfNetworks = WiFi.scanNetworks();
+  int16_t numberOfNetworks = WiFi.scanNetworks();
   Serial.print("Number of networks found: ");
   Serial.println(numberOfNetworks);
  
-  for (int i = 0; i < numberOfNetworks; i++) {
+  for (int8_t i = 0; i < numberOfNetworks; i++) {
  
     Serial.print("Network name: ");
     Serial.println(WiFi.SSID(i));
@@ -63,15 +63,15 @@ void scanNetworks() {
 }
  
 void connectToNetwork() {
-    setwifiAP_STA();
-    tcpip_adapter_dhcpc_start(TCPIP_ADAPTER_IF_AP);
-    WiFi.begin(ssid, password);
-    int tries = 0;
-    while (!WiFi.isConnected()) {
-        if(tries>20){
-            Serial.println("connection to WiFi FAILED!");
-            return;
-        }
+  setWifiSTA();
+  tcpip_adapter_dhcpc_start(TCPIP_ADAPTER_IF_AP);
+  WiFi.begin(ssid, password);
+  int8_t tries = 0;
+  while (!WiFi.isConnected()) {
+    if(tries>20){
+        Serial.println("connection to WiFi FAILED!");
+        return;
+    }
     delay(1000);
     Serial.println("Establishing connection to WiFi..");
     tries++;

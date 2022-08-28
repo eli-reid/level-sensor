@@ -6,8 +6,6 @@
         <title>
             Level Sensor
         </title>
-       
-        <script type="text/javascript" src="js/jquery.js"></script>
         
         <style>
             * {box-sizing: border-box}
@@ -47,10 +45,14 @@
     </head>
     <body>
         <button class="tablink" onclick="openPage('Home', this, 'black')" id="defaultOpen">Status</button>
+        <button class="tablink" onclick="openPage('Wifi', this,'black')" >Wifi Settings</button>
         <button class="tablink" onclick="openPage('Config', this,'black')" >Config</button>
         <button class="tablink" onclick="openPage('About', this, 'black')">About</button>
 
         <div id="Home" class="tabcontent">
+
+        </div>
+        <div id="Wifi" class="tabcontent">
 
         </div>
 
@@ -62,10 +64,10 @@
             <h3>About</h3>
             <p>Who we are and what we do.</p>
         </div>
-
     </body>
+    <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/Events.js"></script>
     <script type="text/javascript" src="js/Websocket.js"></script>
     <script type="text/javascript" src="js/Helper.js"></script>
-</script>
+
 </html>

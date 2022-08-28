@@ -16,13 +16,26 @@ String processor(const String &var){
     return "";
 }
 
+bool (loginHandler)(String user, String password){
+
+    return false;
+}
+
 void onRequest(void *arg){
    
 }
 
-void setupHttpServer(){
+void setupHttpServer(){  
     Server.serveStatic("/", SPIFFS, "/www/").setDefaultFile("index.html");
     Server.serveStatic("/", SPIFFS, "/www/").setCacheControl("max-age=60");
+
+    Server.on("/login", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(SPIFFS, "/login.html", String(), false, processor);
+    });
+    Server.on("/login", HTTP_POST, [](AsyncWebServerRequest *request){
+        request->send(SPIFFS, "/status.html", String(), false, processor);
+    });
+
     Server.on("/config.html", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, "/config.html", String(), false, processor);
     });
@@ -99,7 +112,7 @@ String getStatusJSON(){
 void (*onCmd)(AsyncWebSocketClient *client, char* cmd, char* type, char* data) = [] (AsyncWebSocketClient *client, char* cmd, char* type,  char* txt){};
 
 // command format "CMD|TYPE|TEXT"
-//TYPE = JSON or Text
+//TYPE = GET, POST
 void wsMessageParse(char *msgData, AsyncWebSocketClient *client){
         std::vector <char *> result;
         char *tmp = strtok(msgData,"|");
@@ -114,6 +127,7 @@ void wsMessageParse(char *msgData, AsyncWebSocketClient *client){
             onCmd(client, result.at(0), result.at(1), result.at(2));
         return;
 }
+
 // only gets first frame of message 
 void wsMessageHandler(AsyncWebSocket *server, AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len){
     AwsFrameInfo * info = (AwsFrameInfo*)arg;
@@ -154,7 +168,6 @@ void setupWebSocket(){
 }
 
 void startHttpServer(){
-    tcpip_adapter_init();
     setupHttpServer();
     setupEvents();
     setupWebSocket();
