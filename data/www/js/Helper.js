@@ -3,11 +3,11 @@ $(document).ready(function(){
         $('#Home').load("/status.html");
         $('#Config').load("/config.html");
         $('#Wifi').load("/wifi.html");
+        
     });
 
-let config={};
 
-//Tab COntrol
+//Tab Control
 function openPage(pageName,elmnt,color) {
     let i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
@@ -36,8 +36,8 @@ function saveNetworkConfig(){
         configJSON.WIFI_STA_CONFIG.DNS_SERVER1 = document.getElementById('DNSText1').value;
         configJSON.WIFI_STA_CONFIG.DNS_SERVER2 = document.getElementById('DNSText2').value;
     }
-   console.log("saving config")
-   console.log(JSON.stringify(configJSON));
+    console.log("saving config")
+    console.log(JSON.stringify(configJSON));
     saveConfig(JSON.stringify(configJSON));
     getConfig();
 }

@@ -1,4 +1,5 @@
 let configJSON="";
+
 function eventConnect(){
     if (!!window.EventSource) {
         let eventCon = new EventSource('/events');
@@ -11,6 +12,7 @@ function eventConnect(){
 }
 
 function onEventOpen(event){
+    
 
 }
 
@@ -34,7 +36,6 @@ function updateDistance(event){
 }
 
 function updatedConfig(event){
-    console.log("we are getting a config event")
     console.log(event.data);
     configJSON = JSON.parse(event.data);
     document.getElementById('ipadd').innerText = configJSON.WIFI_STA_CONFIG.IP_ADDR

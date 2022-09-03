@@ -50,8 +50,8 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
     |                                                 Config Handler                                                                    |
     *************************************************************************************************************************************
 */
-
-StaticJsonDocument<2048> doc; 
+// add injection of StaticJson Document to loadconfig and saveconfig
+/* 
 
 void loadConfig(){
    File config = SPIFFS.open("/config.cfg");
@@ -84,5 +84,5 @@ int getBootCount(){
 float getSensorCal(){
    loadConfig();
    return doc["SENSOR"]["CALIBRATION"];
-}
+} */
 #endif

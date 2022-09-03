@@ -1,6 +1,12 @@
 let gateway = `ws://${window.location.hostname}/ws`;
 let websocket;
-
+const cmdEnum={
+    saveConfig_e:0,
+    getConfig_e:1,
+    getWIFI_e:3,
+    connectWIFI_e:4
+};
+Object.freeze(cmdEnum);
 function onOpen(event) {
     
     console.log('Connection opened '+ event);
@@ -37,13 +43,13 @@ function wsConnect(){
     }
 }
 function getConfig(){
-    let cmd ="GET|getConfig|tttt";
+    let cmd ="GET|" + cmdEnum.getConfig_e + "|tttt";
     sendcmd(cmd);
 }
 
 function saveConfig(config){
    
-    let cmd = "POST|saveConfig|"+config;
+    let cmd = "POST|" + cmdEnum.saveConfig_e + "|"+config;
     sendcmd(cmd);
 }
 
