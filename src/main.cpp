@@ -10,13 +10,13 @@ void setup() {
     startDistanceTimer();
     startFileSystem();
     startHttpServer();
-    increamentBootCount();
+    increamentBootCount(doc);
     connectToNetwork();
     Serial.print("Current Boot Count: ");
-    Serial.println(getBootCount());
+    Serial.println(getBootCount(doc));
     Serial.print("Current Sensor cal: ");
-    Serial.println(getSensorCal());
-    onCmd = CommandHandler;
+    Serial.println(getSensorCal(doc));
+    onCmd = onCommand;
   
 }
 
@@ -30,7 +30,7 @@ void loop() {
     
     if(d != distIn){
         d=distIn;
-        sprintf(dist,"%f",distIn+getSensorCal());
+        sprintf(dist,"%f",distIn+getSensorCal(doc));
         events.send(dist,"newdistance",millis());
     }
     delay(100);

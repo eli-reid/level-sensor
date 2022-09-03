@@ -108,24 +108,35 @@ String getStatusJSON(){
    serializeJsonPretty(statusJson, temp);
    return temp;
 }
-//place holder function for websocket message event
-void (*onCmd)(AsyncWebSocketClient *client, char* cmd, char* type, char* data) = [] (AsyncWebSocketClient *client, char* cmd, char* type,  char* txt){};
 
-// command format "CMD|TYPE|TEXT"
+//place holder function for websocket message event
+void (*onCmd)(AsyncWebSocketClient *client, char* type, int cmd, char* data) = [] (AsyncWebSocketClient *client,  char* type, int cmd, char* txt){};
+
+// command format "TYPE|CMD|TEXT"
 //TYPE = GET, POST
 void wsMessageParse(char *msgData, AsyncWebSocketClient *client){
-        std::vector <char *> result;
-        char *tmp = strtok(msgData,"|");
-        while (tmp != NULL)
-        {           
-           result.push_back(tmp);
-           tmp = strtok (NULL, "|");
-        }
-        if(result.size() < 3)
+    try
+    {
+        char* type = strtok(msgData,"|"); ;
+        char * cmdTmp = strtok (NULL, "|");
+        int cmd;
+        char* data = strtok (NULL, "|");
+        if(!cmdTmp==NULL)
+            cmd = std::stoi(cmdTmp);
+        else 
+            cmd =-1;
+        
+        if(type == NULL || cmd == -1 || data == NULL)
             client->text("Invailid Commmand Structure Recieved!");
         else
-            onCmd(client, result.at(0), result.at(1), result.at(2));
+            onCmd(client, type, cmd, data);
         return;
+    }
+    catch(const std::exception& e)
+    {
+         Serial.println(e.what());
+    }
+    
 }
 
 // only gets first frame of message 
