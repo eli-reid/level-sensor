@@ -1,23 +1,26 @@
 #include "main.h"
-int prevClientCount = 0 ,
-     clientCount = 0;
-float d = distIn;
-char dist[10];
+int prevClientCount = 0;
+int clientCount = 0;
 
 void setup() {
-    tcpip_adapter_init();
+    esp_netif_init();
     startSerial();
     startDistanceTimer();
     startFileSystem();
     startHttpServer();
     increamentBootCount(doc);
-    connectToNetwork();
+    connectToNetwork("MyFy","edog0049a");
+
+    //Callback Functions
+    onCmd = onCommand;
+    onNewDistance = onDistance;
+    onWifiScanComplete = onWifiScanComlpeted;
+
+    //log output 
     Serial.print("Current Boot Count: ");
     Serial.println(getBootCount(doc));
     Serial.print("Current Sensor cal: ");
     Serial.println(getSensorCal(doc));
-    onCmd = onCommand;
-  
 }
 
 void loop() {  
@@ -27,11 +30,5 @@ void loop() {
         prevClientCount=clientCount;
     }
     webSocket.cleanupClients();
-    
-    if(d != distIn){
-        d=distIn;
-        sprintf(dist,"%f",distIn+getSensorCal(doc));
-        events.send(dist,"newdistance",millis());
-    }
     delay(100);
 }
