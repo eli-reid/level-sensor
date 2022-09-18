@@ -21,9 +21,7 @@ bool (loginHandler)(String user, String password){
     return false;
 }
 
-void onRequest(void *arg){
-   
-}
+void onRequest(void *arg){}
 
 void setupHttpServer(){  
     Server.serveStatic("/", SPIFFS, "/www/").setDefaultFile("index.html");
@@ -44,33 +42,6 @@ void setupHttpServer(){
     });
     Server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(200, "text/plain", String(ESP.getFreeHeap()));
-    });
-
-    Server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
-        String json = "[";
-        int n = WiFi.scanComplete();
-        if(n == -2){
-            WiFi.scanNetworks(true);
-        } else if(n){
-            for (int i = 0; i < n; ++i){
-            if(i) json += ",";
-            json += "{";
-            json += "\"rssi\":"+String(WiFi.RSSI(i));
-            json += ",\"ssid\":\""+WiFi.SSID(i)+"\"";
-            json += ",\"bssid\":\""+WiFi.BSSIDstr(i)+"\"";
-            json += ",\"channel\":"+String(WiFi.channel(i));
-            json += ",\"secure\":"+String(WiFi.encryptionType(i));
-            //json += ",\"hidden\":"+String(WiFi.isHidden(i)?"true":"false");
-            json += "}";
-            }
-            WiFi.scanDelete();
-            if(WiFi.scanComplete() == -2){
-            WiFi.scanNetworks(true);
-            }
-        }
-        json += "]";
-        request->send(200, "application/json", json);
-        json = String();
     });
 
     Server.onNotFound([](AsyncWebServerRequest *request){
@@ -110,23 +81,27 @@ String getStatusJSON(){
 }
 
 //place holder function for websocket message event
-void (*onCmd)(AsyncWebSocketClient *client, char* type, int cmd, char* data) = [] (AsyncWebSocketClient *client,  char* type, int cmd, char* txt){};
+void (*onCmd)(AsyncWebSocketClient *client, const char* type, int cmd, const char* data) = [] (AsyncWebSocketClient *client,  const char* type, int cmd, const char* txt){/*place holder for custom function*/};
 
 // command format "TYPE|CMD|TEXT"
 //TYPE = GET, POST
 void wsMessageParse(char *msgData, AsyncWebSocketClient *client){
     try
     {
-        char* type = strtok(msgData,"|"); ;
-        char * cmdTmp = strtok (NULL, "|");
+        char *saveptr;
+        const char *type = strtok_r(msgData,"|", &saveptr); 
+        const char *cmdTmp = strtok_r(nullptr, "|", &saveptr);
+        const char *data = strtok_r(nullptr, "|", &saveptr);
+        Serial.println(type);
+        Serial.println(cmdTmp);
+        Serial.println(data);
         int cmd;
-        char* data = strtok (NULL, "|");
-        if(!cmdTmp==NULL)
+        if(cmdTmp!=nullptr)
             cmd = std::stoi(cmdTmp);
         else 
             cmd =-1;
-        
-        if(type == NULL || cmd == -1 || data == NULL)
+        Serial.println(cmd);
+        if(type ==nullptr || cmd == -1 || data == nullptr)
             client->text("Invailid Commmand Structure Recieved!");
         else
             onCmd(client, type, cmd, data);
@@ -136,12 +111,11 @@ void wsMessageParse(char *msgData, AsyncWebSocketClient *client){
     {
          Serial.println(e.what());
     }
-    
 }
 
 // only gets first frame of message 
 void wsMessageHandler(AsyncWebSocket *server, AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len){
-    AwsFrameInfo * info = (AwsFrameInfo*)arg;
+    const AwsFrameInfo * info = (AwsFrameInfo*)arg;
     if(info->final && info->index == 0 && info->len == len){
         Serial.printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
         if(info->opcode == WS_TEXT){

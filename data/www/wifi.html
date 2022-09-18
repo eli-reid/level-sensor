@@ -5,8 +5,26 @@
  -->
 
 
+<div>
+    <label for="Wifi_select" id="Wifi_select_label"> </label><br>
+    <select class="Wifi_select" id="Wifi_select" title="Wifi" onchange="onwifiselect(this)">
+    </select>
+    <button title="Save" onclick="">Save</button>
+    <button title="Scan" onclick="getWifiList()">Scan</button>
+</div>
+<div id="wifi_pass"  hidden="true">
+    <label for="wifi_pass">Wifi Password:</label><br>
+    <input type="password" id="password">
+</div>
 
-<select class="Wifi_select" id="Wifi_select">
-    <option title="Select Wifi">Select Wifi</option>
-</select>
-<button title="Save" onclick="">Save</button>
+
+<script>
+    function onwifiselect(wifi){
+        
+        const secure = document.getElementById(wifi.value);
+        if(secure.value > 0)
+            document.getElementById("wifi_pass").hidden = false;
+        else
+            document.getElementById("wifi_pass").hidden = true;
+    }
+</script>

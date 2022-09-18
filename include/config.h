@@ -36,8 +36,7 @@ void saveConfig(StaticJsonDocument<JSON_DOC_SIZE>& doc){
 void increamentBootCount(StaticJsonDocument<JSON_DOC_SIZE>& doc){
     loadConfig(doc);
     int bootcnt = doc["START_UP"]["BOOT_COUNT"];
-    bootcnt += 1;
-    doc["START_UP"]["BOOT_COUNT"] = bootcnt;
+    doc["START_UP"]["BOOT_COUNT"] = bootcnt + 1;
     saveConfig(doc);
 }
 
@@ -54,7 +53,7 @@ float getSensorCal(StaticJsonDocument<JSON_DOC_SIZE>& doc){
 void updateNetworkConfig(StaticJsonDocument<JSON_DOC_SIZE>& doc){
     IPAddress lip = WiFi.localIP();
     if(doc["WIFI_STA_CONFIG"]["DCHP_ENABLED"] && 
-    strcmp(doc["WIFI_STA_CONFIG"]["IP_ADDR"].as<char*>(),lip.toString().c_str()))
+    strcmp(doc["WIFI_STA_CONFIG"]["IP_ADDR"].as<const char*>(),lip.toString().c_str()))
     {
         Serial.println("Updating network values!");
         doc["WIFI_STA_CONFIG"]["IP_ADDR"]=WiFi.localIP();

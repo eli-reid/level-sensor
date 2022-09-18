@@ -3,7 +3,7 @@ $(document).ready(function(){
         $('#Home').load("/status.html");
         $('#Config').load("/config.html");
         $('#Wifi').load("/wifi.html");
-        
+     
     });
 
 
@@ -23,11 +23,12 @@ function openPage(pageName,elmnt,color) {
 }
 
 function onLoad(event) {
+   
     eventConnect();
     wsConnect();
 }
 
-function saveNetworkConfig(){
+function saveIPConfig(){
     configJSON.WIFI_STA_CONFIG.DCHP_ENABLED = document.getElementById('DHCP').checked;
     if(document.getElementById('Static').checked){
         configJSON.WIFI_STA_CONFIG.IP_ADDR = document.getElementById('IP_addrText').value;
@@ -38,14 +39,18 @@ function saveNetworkConfig(){
     }
     console.log("saving config")
     console.log(JSON.stringify(configJSON));
-    saveConfig(JSON.stringify(configJSON));
+    postIPConfig(JSON.stringify(configJSON));
     getConfig();
 }
+
+
+
+
+
+
+
+
+
 // Get the element with id="defaultOpen" and click on it
 document.getElementById("defaultOpen").click();
 window.addEventListener('load', onLoad);
-
-
-
-
-
