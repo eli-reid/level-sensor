@@ -1,3 +1,5 @@
+//events: config, wifilist
+
 let configJSON="";
 
 function eventConnect(){
@@ -8,16 +10,16 @@ function eventConnect(){
         eventCon.onmessage = onEventMessage;
         eventCon.addEventListener('newdistance', updateDistance, false);
         eventCon.addEventListener('config', updatedConfig, false);
+        eventCon.addEventListener('wifilist', populateWiFISelect,false);
     }
 }
 
 function onEventOpen(event){
-    
-
+    return;
 }
 
 function onEventMessage(event){
-
+    return;
 }
 
 function onEventError(event){
@@ -53,12 +55,23 @@ function updatedConfig(event){
         document.getElementById('DHCP').checked = true;
         document.getElementById('StaticIP').hidden=true;
         document.getElementById('DHCPIP').hidden=false;
-
     }
     else{
         document.getElementById('Static').checked = true;
         document.getElementById('StaticIP').hidden=false;
         document.getElementById('DHCPIP').hidden=true;
-
     }
 }
+function populateWiFISelect(event){
+    document.getElementById("Wifi_select_label").innerHTML = "Scan Complete";
+    const wifilistw = JSON.parse(event.data);
+    const select = document.getElementById("Wifi_select");
+
+    for(const element of wifilistw){
+        let option = document.createElement('option');
+        option.value = element.ssid;
+        option.innerHTML = element.ssid +"<input type='hidden' id=\"" + element.ssid +"\" value=" + element.secure + ">";
+        select.appendChild(option);
+    }
+}
+    
